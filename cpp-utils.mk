@@ -253,6 +253,29 @@ release_debug/bin/$(1): $(addsuffix .o,$(addprefix release_debug/,$(2)))
 
 endef
 
+# Create rules to compile files for a shared library
+
+define compile_for_shared_library
+
+release/$(1)/%.cpp.o: $(1)/%.cpp
+	@mkdir -p release/$(1)/
+	@echo -e "$(MODE_COLOR)[release]$(NO_COLOR) Compile $(FILE_COLOR)$(1)/$$*.cpp$(NO_COLOR)"
+	$(Q)$(CXX) $(RELEASE_FLAGS) $(CXX_FLAGS) $(2) -MD -MF release/$(1)/$$*.cpp.d -o release/$(1)/$$*.cpp.o -c -fPIC $(1)/$$*.cpp
+	@ sed -i -e 's@^\(.*\)\.o:@\1.d \1.o:@' release/$(1)/$$*.cpp.d
+
+endef
+
+# Create rules compile a shared library with a set of files
+
+define build_shared_library
+
+release/lib/lib_$(1).so: $(addsuffix .o,$(addprefix release/,$(2)))
+	@mkdir -p release/lib/
+	@echo -e "$(MODE_COLOR)[release]$(NO_COLOR) Link $(FILE_COLOR)$$@$(NO_COLOR)"
+	$(Q)$(CXX) $(RELEASE_FLAGS) --shared -o $$@ $$+ $(LD_FLAGS) $(3)
+
+endef
+
 # Create rules to link a shared library with a set of files
 
 define add_shared_library
