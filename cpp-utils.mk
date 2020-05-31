@@ -253,7 +253,7 @@ release_debug/bin/$(1): $(addsuffix .o,$(addprefix release_debug/,$(2)))
 
 endef
 
-# Create rules to compile files for a shared library
+# YAEL Create rules to compile files for a shared library
 
 define compile_for_shared_library
 
@@ -265,16 +265,18 @@ release/$(1)/%.cpp.o: $(1)/%.cpp
 
 endef
 
-# Create rules compile a shared library with a set of files
+# YAEL
+# release_$(1): $(addprefix release/bin/,$(2))
 
-define build_shared_library
+define build_example
 
-release/lib/lib_$(1).so: $(addsuffix .o,$(addprefix release/,$(2)))
-	@mkdir -p release/lib/
-	@echo -e "$(MODE_COLOR)[release]$(NO_COLOR) Link $(FILE_COLOR)$$@$(NO_COLOR)"
-	$(Q)$(CXX) $(RELEASE_FLAGS) --shared -o $$@ $$+ $(LD_FLAGS) $(3)
+release/lib/$(1) :
+	@mkdir -p release/lib
+	@echo -e "$(MODE_COLOR)[release]$(NO_COLOR) Link main $(FILE_COLOR)$$@$(NO_COLOR)"
+	$(Q)$(CXX) $(RELEASE_FLAGS) -L/home/localuser/tb/keras4dll-ii/dll/release/lib -o release/lib/testlib python-wrapper-lib/main.cpp -ldll_mnist_mylib -Wl,-rpath,.
 
 endef
+
 
 # Create rules to link a shared library with a set of files
 
