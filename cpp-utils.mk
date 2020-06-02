@@ -253,27 +253,14 @@ release_debug/bin/$(1): $(addsuffix .o,$(addprefix release_debug/,$(2)))
 
 endef
 
-# YAEL Create rules to compile files for a shared library
-
-define compile_for_shared_library
-
-release/$(1)/%.cpp.o: $(1)/%.cpp
-	@mkdir -p release/$(1)/
-	@echo -e "$(MODE_COLOR)[release]$(NO_COLOR) Compile $(FILE_COLOR)$(1)/$$*.cpp$(NO_COLOR)"
-	$(Q)$(CXX) $(RELEASE_FLAGS) $(CXX_FLAGS) $(2) -MD -MF release/$(1)/$$*.cpp.d -o release/$(1)/$$*.cpp.o -c -fPIC $(1)/$$*.cpp
-	@ sed -i -e 's@^\(.*\)\.o:@\1.d \1.o:@' release/$(1)/$$*.cpp.d
-
-endef
-
-# YAEL
-# release_$(1): $(addprefix release/bin/,$(2))
+# Build example that uses
 
 define build_example
 
-release/lib/$(1) :
-	@mkdir -p release/lib
+release/bin/$(1) :
+	@mkdir -p release/bin
 	@echo -e "$(MODE_COLOR)[release]$(NO_COLOR) Link main $(FILE_COLOR)$$@$(NO_COLOR)"
-	$(Q)$(CXX) $(RELEASE_FLAGS) -L/home/localuser/tb/keras4dll-ii/dll/release/lib -o release/lib/testlib python-wrapper-lib/main.cpp -ldll_mnist_mylib -Wl,-rpath,.
+	$(Q)$(CXX) $(RELEASE_FLAGS) -L/home/localuser/tb/Keras4DLL-II/dll/release/lib -o release/bin/testlib python-wrapper-lib/main.cpp -ldll_mnist_mylib -Wl,-rpath,./release/lib
 
 endef
 
